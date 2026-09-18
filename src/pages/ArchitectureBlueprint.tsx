@@ -6,7 +6,6 @@ import {
   Background, 
   useNodesState, 
   useEdgesState, 
-  Panel,
   Handle,
   Position
 } from '@xyflow/react';
@@ -137,16 +136,6 @@ export default function ArchitectureBlueprint() {
           >
             <Background color="#1e293b" gap={16} />
             <Controls className="bg-navy-800 border-slate-700 fill-slate-300" />
-            <Panel position="bottom-left" className="bg-navy-800/80 backdrop-blur border border-slate-700 p-3 rounded-lg">
-              <h4 className="text-xs font-bold text-slate-400 mb-2 uppercase">Legend</h4>
-              <div className="flex flex-wrap gap-3 text-xs font-medium">
-                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-[#2196FF]"></div> Frontend</div>
-                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-[#10B981]"></div> Backend</div>
-                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-[#F59E0B]"></div> Database/Storage</div>
-                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-[#A855F7]"></div> AI</div>
-                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-slate-500"></div> External</div>
-              </div>
-            </Panel>
           </ReactFlow>
         </div>
 
