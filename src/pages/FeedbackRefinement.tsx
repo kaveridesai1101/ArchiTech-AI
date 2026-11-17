@@ -1,85 +1,168 @@
 import { useState, useEffect } from 'react';
 import type { ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, User, MessageSquare, Cpu, CheckCircle2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, User, MessageSquare, Cpu, CheckCircle2, Database, Layers } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
 
-// Per-scenario before/after diagrams
+// Per-scenario before/after diagrams highlighting core architectural transformations
 const BeforeAfterDiagram = ({ scenarioId, step }: { scenarioId: string, step: number }) => {
   const before: Record<string, ReactElement> = {
     'online-learning': (
-      <div className="flex flex-col items-center font-mono text-sm text-slate-400">
-        <span>Backend</span>
-        <span className="my-1 text-slate-600">↓</span>
-        <span>Database</span>
+      <div className="flex flex-col items-center font-mono text-xs text-slate-400 space-y-1.5">
+        <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded text-center w-full">
+          <span className="font-bold text-slate-300">Monolithic Architecture</span>
+          <div className="text-[10px] text-slate-500">Shared 'users' table (all roles mixed)</div>
+        </div>
+        <span className="text-slate-600">↓</span>
+        <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded text-center w-full">
+          <span className="text-slate-300">Coupled Backend + Single PostgreSQL DB</span>
+          <div className="text-[10px] text-slate-500">No dedicated Faculty Test Generation engine</div>
+        </div>
       </div>
     ),
     'ecommerce': (
-      <div className="flex flex-col items-center font-mono text-sm text-slate-400">
-        <span>Application</span>
-        <span className="my-1 text-slate-600">↓</span>
-        <span>Product + Order + Payment</span>
+      <div className="flex flex-col items-center font-mono text-xs text-slate-400 space-y-1.5">
+        <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded text-center w-full">
+          <span className="font-bold text-slate-300">Shared E-Commerce DB</span>
+          <div className="text-[10px] text-slate-500">Customer, Merchant & Inventory data mixed</div>
+        </div>
+        <span className="text-slate-600">↓</span>
+        <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded text-center w-full">
+          <span className="text-slate-300">Coupled Order & Payment Service</span>
+          <div className="text-[10px] text-slate-500">High risk of inventory overselling</div>
+        </div>
       </div>
     ),
     'healthcare': (
-      <div className="flex flex-col items-center font-mono text-sm text-slate-400">
-        <span>API</span>
-        <span className="my-1 text-slate-600">↓</span>
-        <span>Appointments</span>
+      <div className="flex flex-col items-center font-mono text-xs text-slate-400 space-y-1.5">
+        <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded text-center w-full">
+          <span className="font-bold text-slate-300">Single Clinical DB</span>
+          <div className="text-[10px] text-slate-500">Patient PHI and public doctor schedules combined</div>
+        </div>
+        <span className="text-slate-600">↓</span>
+        <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded text-center w-full">
+          <span className="text-slate-300">Generic Appointment Service</span>
+          <div className="text-[10px] text-slate-500">No slot concurrency mutex locking</div>
+        </div>
       </div>
     ),
   };
 
   const after: Record<string, ReactElement> = {
     'online-learning': (
-      <div className="flex flex-col items-center font-mono text-sm text-success">
-        <span>Backend</span>
-        <div className="h-4 w-px bg-success my-1"></div>
-        <div className="flex gap-8 text-xs">
-          <div className="flex flex-col items-center">
-            <span>Course Service</span>
-            <span className="text-success/70">↓</span>
-            <span className="font-bold">PostgreSQL</span>
+      <div className="flex flex-col font-mono text-xs text-success space-y-3">
+        <div className="bg-success/10 border border-success/30 p-2.5 rounded-lg">
+          <div className="font-bold flex items-center gap-1.5 text-success">
+            <Layers size={14} /> 4-Tier Role Isolation & Dedicated Services
           </div>
-          <div className="flex flex-col items-center">
-            <span>Payment Service</span>
-            <span className="text-success/70">↓</span>
-            <span className="font-bold">Payment Gateway</span>
+          <div className="text-[11px] text-slate-300 mt-1">
+            • <b>Faculty Test Gen Engine</b>: AI test authoring & student examination dispatch
+          </div>
+          <div className="text-[11px] text-slate-300">
+            • <b>Principal Audit Service</b>: Immutable institutional compliance logging
+          </div>
+        </div>
+
+        <div className="bg-success/10 border border-success/30 p-2.5 rounded-lg">
+          <div className="font-bold flex items-center gap-1.5 text-warning">
+            <Database size={14} /> 4 Separate Database Tables / Schemas
+          </div>
+          <div className="grid grid-cols-2 gap-2 mt-1.5 text-[10px] text-slate-200">
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-primary-light font-bold">Student DB Table</span>
+              <div>students, submissions, progress</div>
+            </div>
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-warning font-bold">Faculty DB Table</span>
+              <div>faculty_members, curricula</div>
+            </div>
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-cyan font-bold">Test Bank DB Table</span>
+              <div>generated_tests, questions, rubrics</div>
+            </div>
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-purple-400 font-bold">Principal DB Table</span>
+              <div>principals, academic_audit_logs</div>
+            </div>
           </div>
         </div>
       </div>
     ),
     'ecommerce': (
-      <div className="flex flex-col items-center font-mono text-sm text-success">
-        <div className="flex gap-8 text-xs">
-          <div className="flex flex-col items-center">
-            <span>Product Service</span>
-            <span className="text-success/70">↓</span>
-            <span className="font-bold">Search Service</span>
+      <div className="flex flex-col font-mono text-xs text-success space-y-3">
+        <div className="bg-success/10 border border-success/30 p-2.5 rounded-lg">
+          <div className="font-bold flex items-center gap-1.5 text-success">
+            <Layers size={14} /> Decoupled Multi-Vendor Microservices
           </div>
-          <div className="flex flex-col items-center">
-            <span>Order Service</span>
-            <span className="text-success/70">↓</span>
-            <span>Payment Service</span>
-            <span className="text-success/70">↓</span>
-            <span className="font-bold">Payment Gateway</span>
+          <div className="text-[11px] text-slate-300 mt-1">
+            • <b>Merchant Catalog Engine</b>: Isolated seller SKU authoring
+          </div>
+          <div className="text-[11px] text-slate-300">
+            • <b>SAGA Checkout Coordinator</b>: Distributed transactional consistency
+          </div>
+        </div>
+
+        <div className="bg-success/10 border border-success/30 p-2.5 rounded-lg">
+          <div className="font-bold flex items-center gap-1.5 text-warning">
+            <Database size={14} /> 4 Separate Database Tables / Schemas
+          </div>
+          <div className="grid grid-cols-2 gap-2 mt-1.5 text-[10px] text-slate-200">
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-primary-light font-bold">Customer DB</span>
+              <div>customers, cart_sessions</div>
+            </div>
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-warning font-bold">Merchant DB</span>
+              <div>merchants, catalog_skus</div>
+            </div>
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-cyan font-bold">Warehouse Stock DB</span>
+              <div>warehouse_bins, sku_stock</div>
+            </div>
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-purple-400 font-bold">Orders Ledger DB</span>
+              <div>orders, escrow_ledger</div>
+            </div>
           </div>
         </div>
       </div>
     ),
     'healthcare': (
-      <div className="flex flex-col items-center font-mono text-sm text-success">
-        <div className="flex gap-8 text-xs">
-          <div className="flex flex-col items-center">
-            <span>Appointment Service</span>
-            <span className="text-success/70">↓</span>
-            <span className="font-bold">Scheduling Service</span>
+      <div className="flex flex-col font-mono text-xs text-success space-y-3">
+        <div className="bg-success/10 border border-success/30 p-2.5 rounded-lg">
+          <div className="font-bold flex items-center gap-1.5 text-success">
+            <Layers size={14} /> HIPAA Zero-Trust Architecture
           </div>
-          <div className="flex flex-col items-center">
-            <span>Notification Service</span>
-            <span className="text-success/70">↓</span>
-            <span className="font-bold">Notification Provider</span>
+          <div className="text-[11px] text-slate-300 mt-1">
+            • <b>Doctor Schedule & EHR Service</b>: Slot publishing & e-prescriptions
+          </div>
+          <div className="text-[11px] text-slate-300">
+            • <b>Redis Redlock Mutex</b>: Zero double-booking concurrency guarantee
+          </div>
+        </div>
+
+        <div className="bg-success/10 border border-success/30 p-2.5 rounded-lg">
+          <div className="font-bold flex items-center gap-1.5 text-warning">
+            <Database size={14} /> 4 Separate Database Tables / Schemas
+          </div>
+          <div className="grid grid-cols-2 gap-2 mt-1.5 text-[10px] text-slate-200">
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-primary-light font-bold">Patient PHI DB</span>
+              <div>patients, vitals, allergies (AES-256)</div>
+            </div>
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-warning font-bold">Doctor DB</span>
+              <div>doctors, credentials, specialties</div>
+            </div>
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-cyan font-bold">Appointments DB</span>
+              <div>appointments, time_slots</div>
+            </div>
+            <div className="bg-navy-900 border border-slate-700 p-1.5 rounded">
+              <span className="text-purple-400 font-bold">HIPAA Audit DB</span>
+              <div>immutable access_logs (WORM)</div>
+            </div>
           </div>
         </div>
       </div>
@@ -94,7 +177,7 @@ const BeforeAfterDiagram = ({ scenarioId, step }: { scenarioId: string, step: nu
       </div>
       {step >= 3 && (
         <div className="bg-[#0A2617] border border-success p-4 rounded-lg relative shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-          <span className="absolute -top-3 left-4 bg-success text-xs px-2 py-0.5 rounded text-white font-sans font-bold">AFTER FEEDBACK</span>
+          <span className="absolute -top-3 left-4 bg-success text-xs px-2 py-0.5 rounded text-white font-sans font-bold">AFTER HUMAN FEEDBACK REFINEMENT</span>
           {after[scenarioId]}
         </div>
       )}
@@ -178,25 +261,15 @@ export default function FeedbackRefinement() {
               <BeforeAfterDiagram scenarioId={currentScenario.id} step={step} />
             </div>
 
-            <AnimatePresence>
-              {step >= 3 && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6">
-                  <div className="flex items-center gap-2 text-success font-medium mb-1">
-                    <CheckCircle2 size={18} /> Feedback incorporated
-                  </div>
-                  <div className="flex items-center gap-2 text-success font-medium mb-6">
-                    <CheckCircle2 size={18} /> Architecture refined
-                  </div>
-                  
-                  <button 
-                    onClick={handleViewRefined}
-                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-light text-white py-3 rounded-lg font-bold transition-all glow-primary"
-                  >
-                    View Refined Blueprint <ArrowRight size={18} />
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <div className="mt-8 flex justify-end">
+              <button 
+                onClick={handleViewRefined}
+                disabled={step < 3}
+                className="flex items-center gap-2 bg-primary hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg glow-primary"
+              >
+                View Refined Architecture <ArrowRight size={18} />
+              </button>
+            </div>
           </div>
         </div>
       </div>

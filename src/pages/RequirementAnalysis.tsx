@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, CheckCircle2, Users, Shield, Bot, CreditCard, TrendingUp, Database, Search, Server, BookOpen, CheckSquare, Brain } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Users, Shield, Bot, CreditCard, TrendingUp, Database, Search, Server, BookOpen, CheckSquare, Brain, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
 
 const iconMap: Record<string, any> = {
-  Users, Shield, Bot, CreditCard, TrendingUp, Database, Search, Server, BookOpen, CheckSquare, Brain
+  Users, Shield, Bot, CreditCard, TrendingUp, Database, Search, Server, BookOpen, CheckSquare, Brain, Lock
 };
 
 export default function RequirementAnalysis() {
@@ -17,7 +17,7 @@ export default function RequirementAnalysis() {
       <div className="mb-6 flex justify-between items-end">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Requirement Analysis</h1>
-          <p className="text-slate-400">The system has converted the natural-language requirement into structured software requirements.</p>
+          <p className="text-slate-400">The system has converted natural-language specifications into structured, multi-role software requirements.</p>
         </div>
         <div className="flex items-center gap-2 bg-success/20 text-success px-4 py-2 rounded-full border border-success/30 font-medium text-sm">
           <CheckCircle2 size={18} />
@@ -40,49 +40,49 @@ export default function RequirementAnalysis() {
           initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
           className="glass-card p-6 flex flex-col"
         >
-          <h3 className="text-lg font-semibold text-slate-300 mb-4 border-b border-slate-700/50 pb-2">Detected Requirements</h3>
+          <h3 className="text-lg font-semibold text-slate-300 mb-4 border-b border-slate-700/50 pb-2">Decomposed Core Architecture Specifications</h3>
           
           <div className="flex-1 overflow-y-auto pr-2 space-y-3">
-            <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+            <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
               <div className="bg-navy-900 p-3 rounded-lg border border-slate-700">
-                <span className="text-slate-500 block mb-1">Application</span>
+                <span className="text-xs text-slate-500 block mb-1 uppercase font-semibold">Application</span>
                 <span className="font-semibold text-white">{requirementsAnalysis.application}</span>
               </div>
-              <div className="bg-navy-900 p-3 rounded-lg border border-slate-700">
-                <span className="text-slate-500 block mb-1">Users</span>
+              <div className="bg-navy-900 p-3 rounded-lg border border-primary/30">
+                <span className="text-xs text-primary-light block mb-1 uppercase font-semibold">User Personas</span>
                 <span className="font-semibold text-white">{requirementsAnalysis.users}</span>
               </div>
               <div className="bg-navy-900 p-3 rounded-lg border border-slate-700">
-                <span className="text-slate-500 block mb-1">Authentication</span>
+                <span className="text-xs text-slate-500 block mb-1 uppercase font-semibold">Authentication</span>
                 <span className="font-semibold text-white">{requirementsAnalysis.authentication}</span>
               </div>
               <div className="bg-navy-900 p-3 rounded-lg border border-slate-700">
-                <span className="text-slate-500 block mb-1">Core Features</span>
+                <span className="text-xs text-slate-500 block mb-1 uppercase font-semibold">Core Features</span>
                 <span className="font-semibold text-white line-clamp-1" title={requirementsAnalysis.coreFeatures}>{requirementsAnalysis.coreFeatures}</span>
               </div>
               {Object.entries(requirementsAnalysis.customFields).map(([key, value], idx) => (
-                <div key={idx} className="bg-navy-900 p-3 rounded-lg border border-slate-700">
-                  <span className="text-slate-500 block mb-1">{key}</span>
-                  <span className="font-semibold text-white line-clamp-1" title={value as string}>{value as string}</span>
+                <div key={idx} className="bg-navy-900 p-3 rounded-lg border border-slate-700/80">
+                  <span className="text-xs text-cyan block mb-1 uppercase font-semibold">{key}</span>
+                  <span className="font-medium text-slate-200 text-xs leading-relaxed" title={value as string}>{value as string}</span>
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 gap-2.5">
               {requirementsAnalysis.requirements.map((req: any, idx: number) => {
                 const Icon = iconMap[req.icon] || Server;
                 return (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + idx * 0.1 }}
                     key={req.id} 
-                    className="flex items-center gap-4 bg-navy-800 border border-slate-600 rounded-lg p-3 hover:border-primary/50 transition-colors"
+                    className="flex items-center gap-3 bg-navy-800/80 border border-slate-600/80 rounded-lg p-3 hover:border-primary/50 transition-colors"
                   >
-                    <div className="bg-primary/20 p-2 rounded-md text-primary-light">
-                      <Icon size={20} />
+                    <div className="bg-primary/20 p-2 rounded-md text-primary-light shrink-0">
+                      <Icon size={18} />
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-400 mb-0.5">{req.category}</h4>
-                      <p className="text-sm font-medium text-white">{req.title}</p>
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{req.category}</h4>
+                      <p className="text-xs font-semibold text-white">{req.title}</p>
                     </div>
                   </motion.div>
                 );
@@ -92,13 +92,13 @@ export default function RequirementAnalysis() {
 
           <div className="mt-4 pt-4 border-t border-slate-700/50 flex justify-between items-center">
             <span className="text-success text-sm font-medium flex items-center gap-1">
-              <CheckCircle2 size={16} /> {requirementsAnalysis.requirements.length + 4 + Object.keys(requirementsAnalysis.customFields).length} key requirements identified
+              <CheckCircle2 size={16} /> {requirementsAnalysis.requirements.length + 4 + Object.keys(requirementsAnalysis.customFields).length} core requirements identified
             </span>
             <button 
               onClick={() => navigate('/rag')}
               className="flex items-center gap-2 bg-primary hover:bg-primary-light text-white px-6 py-2.5 rounded-lg font-bold transition-all glow-primary"
             >
-              Continue to Hybrid RAG <ArrowRight size={18} />
+              Next: Hybrid RAG <ArrowRight size={18} />
             </button>
           </div>
         </motion.div>
