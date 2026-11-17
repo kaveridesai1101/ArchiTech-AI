@@ -14,10 +14,11 @@ import {
   Download, UserCheck, X, Server, Database, Cloud, Shield, 
   Monitor, Bot, Brain, CreditCard,
   BookOpen, CheckSquare, TrendingUp, ExternalLink, Video, PieChart,
-  Lock, Users, Search, Cpu, Key, Terminal
+  Lock, Users, Search, Cpu, Key, Terminal, FileDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
+import { exportArchitecturePdf } from '../utils/exportPdf';
 
 const iconMap: Record<string, any> = {
   Server, Database, Cloud, Shield, Monitor, Bot, Brain, 
@@ -92,6 +93,7 @@ export default function ArchitectureBlueprint() {
   const [, , onNodesChange] = useNodesState(architectureNodesState);
   const [, , onEdgesChange] = useEdgesState(architectureEdgesState);
   const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Re-init nodes/edges when scenario changes
   useEffect(() => {
@@ -101,6 +103,19 @@ export default function ArchitectureBlueprint() {
   const onNodeClick = useCallback((_: any, node: any) => {
     setSelectedNode(node);
   }, []);
+
+  const handleExport = () => {
+    setIsExporting(true);
+    setTimeout(() => {
+      try {
+        exportArchitecturePdf(currentScenario, isRefined);
+      } catch (err) {
+        console.error('Failed to export PDF:', err);
+      } finally {
+        setIsExporting(false);
+      }
+    }, 200);
+  };
 
   const nodeDetails = currentScenario.nodeDetails;
   const technologyStack = currentScenario.technologyStack;
@@ -118,8 +133,23 @@ export default function ArchitectureBlueprint() {
           <p className="text-slate-400 text-sm">{currentScenario.projectName}</p>
         </div>
         <div className="flex gap-4">
-          <button className="flex items-center gap-2 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-            <Download size={16} /> Export Blueprint
+          <button 
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex items-center gap-2 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-300 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-md active:scale-95 disabled:opacity-50"
+            title="Download comprehensive PDF architecture blueprint"
+          >
+            {isExporting ? (
+              <>
+                <FileDown size={16} className="animate-bounce text-primary-light" />
+                <span>Generating PDF...</span>
+              </>
+            ) : (
+              <>
+                <Download size={16} />
+                <span>Export Blueprint</span>
+              </>
+            )}
           </button>
           <button 
             onClick={() => navigate('/validation')}
@@ -283,7 +313,16 @@ export default function ArchitectureBlueprint() {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="p-6 h-full flex flex-col overflow-y-auto"
               >
-                <h2 className="text-lg font-bold text-white mb-2 border-b border-slate-700/50 pb-3">Architecture Summary</h2>
+                <div className="flex justify-between items-center mb-2 border-b border-slate-700/50 pb-3">
+                  <h2 className="text-lg font-bold text-white">Architecture Summary</h2>
+                  <button
+                    onClick={handleExport}
+                    disabled={isExporting}
+                    className="flex items-center gap-1.5 text-xs text-primary-light hover:text-white bg-primary/10 hover:bg-primary/20 border border-primary/30 px-2.5 py-1 rounded transition-colors"
+                  >
+                    <Download size={13} /> PDF
+                  </button>
+                </div>
                 <p className="text-xs text-slate-400 mb-4">Click any node on the blueprint to inspect its core database tables, RBAC rules, and endpoints.</p>
                 
                 <div className="space-y-4 flex-1 pr-1">
@@ -300,7 +339,7 @@ export default function ArchitectureBlueprint() {
                   ))}
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-slate-700/50">
+                <div className="mt-4 pt-4 border-t border-slate-700/50 flex justify-between items-center">
                   <div className="flex items-center gap-2 text-success font-medium text-sm">
                     <CheckSquare size={18} /> Verified In-Depth Architecture
                   </div>

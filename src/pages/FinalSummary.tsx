@@ -1,9 +1,25 @@
-import { CheckCircle2, RotateCcw, Award } from 'lucide-react';
+import { useState } from 'react';
+import { CheckCircle2, RotateCcw, Award, Download, FileDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
+import { exportArchitecturePdf } from '../utils/exportPdf';
 
 export default function FinalSummary() {
-  const { currentScenario } = useAppContext();
+  const { currentScenario, isRefined } = useAppContext();
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = () => {
+    setIsExporting(true);
+    setTimeout(() => {
+      try {
+        exportArchitecturePdf(currentScenario, isRefined);
+      } catch (err) {
+        console.error('Failed to export PDF:', err);
+      } finally {
+        setIsExporting(false);
+      }
+    }, 200);
+  };
 
   return (
     <div className="p-10 max-w-6xl mx-auto h-full flex flex-col items-center justify-center">
@@ -13,7 +29,7 @@ export default function FinalSummary() {
         </div>
         <h1 className="text-4xl font-extrabold text-white mb-3">Architecture Generated Successfully</h1>
         <p className="text-primary-light font-semibold text-lg mb-2">{currentScenario.projectName}</p>
-        <p className="text-xl text-slate-400 max-w-2xl mx-auto">Your software requirement has been transformed into a structured architecture blueprint.</p>
+        <p className="text-xl text-slate-400 max-w-2xl mx-auto">Your software requirement has been transformed into an in-depth, production-ready architecture blueprint.</p>
       </motion.div>
 
       <div className="grid grid-cols-2 gap-10 w-full max-w-4xl mb-12">
@@ -22,13 +38,13 @@ export default function FinalSummary() {
           <div className="space-y-4 text-slate-300">
             <div className="flex justify-between items-center"><span className="text-slate-400">Requirements</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Analyzed</span></div>
             <div className="flex justify-between items-center"><span className="text-slate-400">Knowledge Retrieval</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Hybrid RAG</span></div>
-            <div className="flex justify-between items-center"><span className="text-slate-400">Agents Used</span><span className="font-bold text-white">3</span></div>
-            <div className="flex justify-between items-center"><span className="text-slate-400">Security Analysis</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Completed</span></div>
-            <div className="flex justify-between items-center"><span className="text-slate-400">Cost Analysis</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Completed</span></div>
-            <div className="flex justify-between items-center"><span className="text-slate-400">Architecture</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Generated</span></div>
-            <div className="flex justify-between items-center"><span className="text-slate-400">Human Validation</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Available</span></div>
-            <div className="flex justify-between items-center"><span className="text-slate-400">Feedback Loop</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Enabled</span></div>
-            <div className="flex justify-between items-center"><span className="text-slate-400">Code Scaffolding</span><span className="font-medium text-primary-light">Available</span></div>
+            <div className="flex justify-between items-center"><span className="text-slate-400">Agents Used</span><span className="font-bold text-white">3 Specialized Agents</span></div>
+            <div className="flex justify-between items-center"><span className="text-slate-400">Security Analysis</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> RBAC Matrix</span></div>
+            <div className="flex justify-between items-center"><span className="text-slate-400">Database Design</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Isolated Tables</span></div>
+            <div className="flex justify-between items-center"><span className="text-slate-400">Architecture Blueprint</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Generated</span></div>
+            <div className="flex justify-between items-center"><span className="text-slate-400">Human Validation</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Approved</span></div>
+            <div className="flex justify-between items-center"><span className="text-slate-400">Feedback Refinement</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Synced</span></div>
+            <div className="flex justify-between items-center"><span className="text-slate-400">PDF Documentation</span><span className="font-medium text-primary-light">Ready to Download</span></div>
           </div>
         </motion.div>
 
@@ -45,13 +61,34 @@ export default function FinalSummary() {
         </motion.div>
       </div>
 
-      <motion.button 
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-        onClick={() => { window.location.href = '/new'; }}
-        className="flex items-center gap-2 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-300 px-8 py-3 rounded-xl font-bold transition-all shadow-lg"
-      >
-        <RotateCcw size={18} /> Try Another Scenario
-      </motion.button>
+      <div className="flex gap-4">
+        <motion.button 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+          onClick={handleExport}
+          disabled={isExporting}
+          className="flex items-center gap-2 bg-primary hover:bg-primary-light text-white px-8 py-3.5 rounded-xl font-bold transition-all shadow-lg glow-primary cursor-pointer disabled:opacity-50"
+        >
+          {isExporting ? (
+            <>
+              <FileDown size={20} className="animate-bounce" />
+              <span>Generating PDF Document...</span>
+            </>
+          ) : (
+            <>
+              <Download size={20} />
+              <span>Download Blueprint PDF</span>
+            </>
+          )}
+        </motion.button>
+
+        <motion.button 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+          onClick={() => { window.location.href = '/new'; }}
+          className="flex items-center gap-2 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-300 px-8 py-3.5 rounded-xl font-bold transition-all shadow-lg"
+        >
+          <RotateCcw size={18} /> Try Another Scenario
+        </motion.button>
+      </div>
     </div>
   );
 }
