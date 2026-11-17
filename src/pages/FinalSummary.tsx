@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { CheckCircle2, RotateCcw, Award, Download, FileDown } from 'lucide-react';
+import { CheckCircle2, RotateCcw, Award, Download, FileDown, Image } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
 import { exportArchitecturePdf } from '../utils/exportPdf';
+import { downloadArchitectureDiagramImage } from '../utils/diagramImage';
 
 export default function FinalSummary() {
-  const { currentScenario, isRefined } = useAppContext();
+  const { currentScenario, isRefined, architectureNodesState, architectureEdgesState } = useAppContext();
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = () => {
@@ -19,6 +20,15 @@ export default function FinalSummary() {
         setIsExporting(false);
       }
     }, 200);
+  };
+
+  const handleDownloadImage = () => {
+    downloadArchitectureDiagramImage(
+      architectureNodesState,
+      architectureEdgesState,
+      currentScenario.id,
+      currentScenario.projectName
+    );
   };
 
   return (
@@ -44,7 +54,7 @@ export default function FinalSummary() {
             <div className="flex justify-between items-center"><span className="text-slate-400">Architecture Blueprint</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Generated</span></div>
             <div className="flex justify-between items-center"><span className="text-slate-400">Human Validation</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Approved</span></div>
             <div className="flex justify-between items-center"><span className="text-slate-400">Feedback Refinement</span><span className="flex items-center gap-1 text-success font-medium"><CheckCircle2 size={16} /> Synced</span></div>
-            <div className="flex justify-between items-center"><span className="text-slate-400">PDF Documentation</span><span className="font-medium text-primary-light">Ready to Download</span></div>
+            <div className="flex justify-between items-center"><span className="text-slate-400">Visual Diagram & PDF</span><span className="font-medium text-cyan">Ready to Export</span></div>
           </div>
         </motion.div>
 
@@ -61,30 +71,39 @@ export default function FinalSummary() {
         </motion.div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-4">
+        <motion.button 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
+          onClick={handleDownloadImage}
+          className="flex items-center gap-2 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-200 hover:text-white px-6 py-3.5 rounded-xl font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+        >
+          <Image size={18} className="text-cyan" />
+          <span>Download Diagram (PNG)</span>
+        </motion.button>
+
         <motion.button 
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
           onClick={handleExport}
           disabled={isExporting}
-          className="flex items-center gap-2 bg-primary hover:bg-primary-light text-white px-8 py-3.5 rounded-xl font-bold transition-all shadow-lg glow-primary cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-2 bg-primary hover:bg-primary-light text-white px-7 py-3.5 rounded-xl font-bold transition-all shadow-lg glow-primary cursor-pointer disabled:opacity-50"
         >
           {isExporting ? (
             <>
-              <FileDown size={20} className="animate-bounce" />
-              <span>Generating PDF Document...</span>
+              <FileDown size={18} className="animate-bounce" />
+              <span>Generating PDF...</span>
             </>
           ) : (
             <>
-              <Download size={20} />
-              <span>Download Blueprint PDF</span>
+              <Download size={18} />
+              <span>Download Blueprint (PDF)</span>
             </>
           )}
         </motion.button>
 
         <motion.button 
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
           onClick={() => { window.location.href = '/new'; }}
-          className="flex items-center gap-2 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-300 px-8 py-3.5 rounded-xl font-bold transition-all shadow-lg"
+          className="flex items-center gap-2 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-400 hover:text-slate-200 px-6 py-3.5 rounded-xl font-medium transition-all shadow-md"
         >
           <RotateCcw size={18} /> Try Another Scenario
         </motion.button>

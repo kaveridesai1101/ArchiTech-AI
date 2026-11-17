@@ -14,16 +14,17 @@ import {
   Download, UserCheck, X, Server, Database, Cloud, Shield, 
   Monitor, Bot, Brain, CreditCard,
   BookOpen, CheckSquare, TrendingUp, ExternalLink, Video, PieChart,
-  Lock, Users, Search, Cpu, Key, Terminal, FileDown
+  Lock, Users, Search, Cpu, Key, Terminal, FileDown, Image
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
 import { exportArchitecturePdf } from '../utils/exportPdf';
+import { downloadArchitectureDiagramImage } from '../utils/diagramImage';
 
 const iconMap: Record<string, any> = {
   Server, Database, Cloud, Shield, Monitor, Bot, Brain, 
   CreditCard, BookOpen, CheckSquare, TrendingUp, ExternalLink, Video, 
-  PieChart, Lock, Users, Search, Cpu, Key, Terminal
+  PieChart, Lock, Users, Search, Cpu, Key, Terminal, Image
 };
 
 const CustomNode = ({ data }: any) => {
@@ -117,6 +118,15 @@ export default function ArchitectureBlueprint() {
     }, 200);
   };
 
+  const handleDownloadImage = () => {
+    downloadArchitectureDiagramImage(
+      architectureNodesState,
+      architectureEdgesState,
+      currentScenario.id,
+      currentScenario.projectName
+    );
+  };
+
   const nodeDetails = currentScenario.nodeDetails;
   const technologyStack = currentScenario.technologyStack;
 
@@ -132,12 +142,20 @@ export default function ArchitectureBlueprint() {
           </div>
           <p className="text-slate-400 text-sm">{currentScenario.projectName}</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleDownloadImage}
+            className="flex items-center gap-1.5 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-md active:scale-95"
+            title="Download high-resolution PNG image of the architecture topology"
+          >
+            <Image size={16} className="text-cyan" />
+            <span>Export Image (PNG)</span>
+          </button>
           <button 
             onClick={handleExport}
             disabled={isExporting}
-            className="flex items-center gap-2 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-300 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-md active:scale-95 disabled:opacity-50"
-            title="Download comprehensive PDF architecture blueprint"
+            className="flex items-center gap-1.5 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-md active:scale-95 disabled:opacity-50"
+            title="Download comprehensive PDF architecture blueprint with embedded visual topology"
           >
             {isExporting ? (
               <>
@@ -146,14 +164,14 @@ export default function ArchitectureBlueprint() {
               </>
             ) : (
               <>
-                <Download size={16} />
-                <span>Export Blueprint</span>
+                <Download size={16} className="text-primary-light" />
+                <span>Export Blueprint (PDF)</span>
               </>
             )}
           </button>
           <button 
             onClick={() => navigate('/validation')}
-            className="flex items-center gap-2 bg-primary hover:bg-primary-light text-white px-6 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg glow-primary"
+            className="flex items-center gap-2 bg-primary hover:bg-primary-light text-white px-5 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg glow-primary"
           >
             <UserCheck size={18} /> Human Review
           </button>
@@ -315,13 +333,23 @@ export default function ArchitectureBlueprint() {
               >
                 <div className="flex justify-between items-center mb-2 border-b border-slate-700/50 pb-3">
                   <h2 className="text-lg font-bold text-white">Architecture Summary</h2>
-                  <button
-                    onClick={handleExport}
-                    disabled={isExporting}
-                    className="flex items-center gap-1.5 text-xs text-primary-light hover:text-white bg-primary/10 hover:bg-primary/20 border border-primary/30 px-2.5 py-1 rounded transition-colors"
-                  >
-                    <Download size={13} /> PDF
-                  </button>
+                  <div className="flex gap-1.5">
+                    <button
+                      onClick={handleDownloadImage}
+                      className="flex items-center gap-1 text-xs text-cyan hover:text-white bg-cyan/10 hover:bg-cyan/20 border border-cyan/30 px-2 py-1 rounded transition-colors"
+                      title="Download PNG image"
+                    >
+                      <Image size={12} /> PNG
+                    </button>
+                    <button
+                      onClick={handleExport}
+                      disabled={isExporting}
+                      className="flex items-center gap-1 text-xs text-primary-light hover:text-white bg-primary/10 hover:bg-primary/20 border border-primary/30 px-2 py-1 rounded transition-colors"
+                      title="Download PDF"
+                    >
+                      <Download size={12} /> PDF
+                    </button>
+                  </div>
                 </div>
                 <p className="text-xs text-slate-400 mb-4">Click any node on the blueprint to inspect its core database tables, RBAC rules, and endpoints.</p>
                 

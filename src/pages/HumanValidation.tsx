@@ -63,7 +63,7 @@ export default function HumanValidation() {
               <AlertCircle size={32} />
             </div>
             <h2 className="text-2xl font-bold text-white mb-1">AI GENERATED ARCHITECTURE</h2>
-            <p className="text-slate-400 mb-6">Project: <span className="text-white font-medium">{currentScenario.projectName}</span></p>
+            <p className="text-slate-400 mb-6 font-medium text-sm tracking-wide text-primary-light">{currentScenario.projectName}</p>
             
             <div className="flex items-center justify-center gap-2 bg-navy-900 border border-slate-700 px-4 py-2 rounded-full mb-8">
               <div className="w-2 h-2 rounded-full bg-warning animate-pulse"></div>
