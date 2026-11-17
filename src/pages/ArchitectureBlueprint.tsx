@@ -14,17 +14,16 @@ import {
   Download, UserCheck, X, Server, Database, Cloud, Shield, 
   Monitor, Bot, Brain, CreditCard,
   BookOpen, CheckSquare, TrendingUp, ExternalLink, Video, PieChart,
-  Lock, Users, Search, Cpu, Key, Terminal, FileDown, Image
+  Lock, Users, Search, Cpu, Key, Terminal, FileDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
 import { exportArchitecturePdf } from '../utils/exportPdf';
-import { downloadArchitectureDiagramImage } from '../utils/diagramImage';
 
 const iconMap: Record<string, any> = {
   Server, Database, Cloud, Shield, Monitor, Bot, Brain, 
   CreditCard, BookOpen, CheckSquare, TrendingUp, ExternalLink, Video, 
-  PieChart, Lock, Users, Search, Cpu, Key, Terminal, Image
+  PieChart, Lock, Users, Search, Cpu, Key, Terminal
 };
 
 const CustomNode = ({ data }: any) => {
@@ -118,15 +117,6 @@ export default function ArchitectureBlueprint() {
     }, 200);
   };
 
-  const handleDownloadImage = () => {
-    downloadArchitectureDiagramImage(
-      architectureNodesState,
-      architectureEdgesState,
-      currentScenario.id,
-      currentScenario.projectName
-    );
-  };
-
   const nodeDetails = currentScenario.nodeDetails;
   const technologyStack = currentScenario.technologyStack;
 
@@ -143,14 +133,6 @@ export default function ArchitectureBlueprint() {
           <p className="text-slate-400 text-sm">{currentScenario.projectName}</p>
         </div>
         <div className="flex items-center gap-3">
-          <button 
-            onClick={handleDownloadImage}
-            className="flex items-center gap-1.5 bg-navy-800 hover:bg-navy-700 border border-slate-600 text-slate-300 hover:text-white px-3.5 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-md active:scale-95"
-            title="Download high-resolution PNG image of the architecture topology"
-          >
-            <Image size={16} className="text-cyan" />
-            <span>Export Image (PNG)</span>
-          </button>
           <button 
             onClick={handleExport}
             disabled={isExporting}
@@ -334,13 +316,6 @@ export default function ArchitectureBlueprint() {
                 <div className="flex justify-between items-center mb-2 border-b border-slate-700/50 pb-3">
                   <h2 className="text-lg font-bold text-white">Architecture Summary</h2>
                   <div className="flex gap-1.5">
-                    <button
-                      onClick={handleDownloadImage}
-                      className="flex items-center gap-1 text-xs text-cyan hover:text-white bg-cyan/10 hover:bg-cyan/20 border border-cyan/30 px-2 py-1 rounded transition-colors"
-                      title="Download PNG image"
-                    >
-                      <Image size={12} /> PNG
-                    </button>
                     <button
                       onClick={handleExport}
                       disabled={isExporting}
